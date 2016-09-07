@@ -18,15 +18,33 @@
 
 package com.lauszus.dronedraw;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import au.com.bytecode.opencsv.CSVWriter;
 
 public class DrawActivity extends AppCompatActivity {
-    private static final String TAG = DrawActivity.class.getSimpleName();
+    public static final String TAG = DrawActivity.class.getSimpleName();
     public static final boolean D = BuildConfig.DEBUG; // This is automatically set when building
+
+    private final int WRITE_EXTERNAL_STORAGE_REQUEST = 0;
 
     @SuppressLint("InlinedApi")
     @Override
@@ -52,6 +70,74 @@ public class DrawActivity extends AppCompatActivity {
             }
         });
 
-        //Button mUploadButton = (Button) findViewById(R.id.upload_button);
+        if (ContextCompat.checkSelfPermission(this,  Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE }, WRITE_EXTERNAL_STORAGE_REQUEST);
+
+        findViewById(R.id.upload_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (ContextCompat.checkSelfPermission(getApplicationContext(),  Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+                    return;
+
+                if (!mDrawView.xCoordinates.isEmpty() || !mDrawView.yCoordinates.isEmpty()) {
+                    File csvFileLocation = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "path.csv");
+                    CSVWriter writer;
+                    try {
+                        writer = new CSVWriter(new FileWriter(csvFileLocation), ',', CSVWriter.NO_QUOTE_CHARACTER);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+
+                    for (int i = 0; i < mDrawView.xCoordinates.size(); i++) {
+                        float x = mDrawView.xCoordinates.get(i);
+                        float y = mDrawView.yCoordinates.get(i);
+
+                        writer.writeNext(new String[] {Float.toString(x), Float.toString(y)});
+
+                        if (D)
+                            Log.d(TAG, "x: " + x + " y: " + y);
+                    }
+                    try {
+                        writer.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+
+                    Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                    emailIntent.setType("vnd.android.cursor.dir/email"); // "text/plain"
+                    emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {"lauszus@gmail.com"});
+                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Email subject");
+                    emailIntent.putExtra(Intent.EXTRA_TEXT, "Email message text");
+                    emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(csvFileLocation));
+
+                    if (emailIntent.resolveActivity(getPackageManager()) != null) { // Make sure that an app exist that can handle the intent
+                        startActivity(emailIntent);
+                    } else
+                        Toast.makeText(getApplicationContext(), "No email app found", Toast.LENGTH_SHORT).show();
+
+                    mDrawView.xCoordinates.clear();
+                    mDrawView.yCoordinates.clear();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case WRITE_EXTERNAL_STORAGE_REQUEST: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission was granted, yay!
+                    Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Permission denied, boo!
+                    Toast.makeText(this, "Permission required!", Toast.LENGTH_LONG).show();
+                    finish();
+                }
+            }
+        }
     }
 }

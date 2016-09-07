@@ -30,6 +30,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.ArrayList;
+
 // Inspired by: http://stackoverflow.com/a/16650524
 public class DrawingView extends View {
     private Bitmap mBitmap;
@@ -40,6 +42,9 @@ public class DrawingView extends View {
     final private Path circlePath;
     final private Paint mPaint;
     private boolean forceClear;
+
+    final public ArrayList<Float> xCoordinates = new ArrayList<>();
+    final public ArrayList<Float> yCoordinates = new ArrayList<>();
 
     public DrawingView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -112,6 +117,9 @@ public class DrawingView extends View {
             mPath.quadTo(mX, mY, (x + mX)/2, (y + mY)/2);
             mX = x;
             mY = y;
+
+            xCoordinates.add(x); // Store coordinates in the arrays
+            yCoordinates.add(y);
 
             circlePath.reset();
             circlePath.addCircle(mX, mY, 30, Path.Direction.CW);
