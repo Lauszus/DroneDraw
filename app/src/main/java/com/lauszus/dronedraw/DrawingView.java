@@ -18,6 +18,7 @@
 
 package com.lauszus.dronedraw;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -31,16 +32,13 @@ import android.view.View;
 
 // Inspired by: http://stackoverflow.com/a/16650524
 public class DrawingView extends View {
-    private Bitmap  mBitmap;
+    private Bitmap mBitmap;
     private Canvas mCanvas;
-    private Path mPath;
-    private Paint mBitmapPaint;
-    //Context context;
-    private Paint circlePaint;
-    private Path circlePath;
-
-    private Paint mPaint;
-
+    final private Path mPath;
+    final private Paint mBitmapPaint;
+    final private Paint circlePaint;
+    final private Path circlePath;
+    final private Paint mPaint;
     private boolean forceClear;
 
     public DrawingView(Context context, AttributeSet attrs) {
@@ -129,8 +127,11 @@ public class DrawingView extends View {
         mPath.reset();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        super.onTouchEvent(event);
+
         float x = event.getX();
         float y = event.getY();
 
@@ -138,16 +139,16 @@ public class DrawingView extends View {
             case MotionEvent.ACTION_DOWN:
                 touch_start(x, y);
                 invalidate();
-                break;
+                return true;
             case MotionEvent.ACTION_MOVE:
                 touch_move(x, y);
                 invalidate();
-                break;
+                return true;
             case MotionEvent.ACTION_UP:
                 touch_up();
                 invalidate();
-                break;
+                return true;
         }
-        return true;
+        return false;
     }
 }
