@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">DroneDraw</string>
+
+    <string name="clear_button">Clear</string>
+    <string name="upload_button">Upload</string>
+    <!--<string name="dummy_content">DUMMY\nCONTENT</string>-->
+</resources>
