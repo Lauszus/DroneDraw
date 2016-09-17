@@ -75,7 +75,7 @@ public class DrawActivity extends AppCompatActivity {
     private void sendEmail(File file) {
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
         emailIntent.setType("vnd.android.cursor.dir/email");
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"lauszus@gmail.com"});
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{ "lauszus@gmail.com" });
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Drone path");
         emailIntent.putExtra(Intent.EXTRA_TEXT, "Please see attachment");
         emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
@@ -112,14 +112,14 @@ public class DrawActivity extends AppCompatActivity {
         final ProgressDialog dialog = new ProgressDialog(this);
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.setCancelable(false);
-        dialog.setMessage("Uploading");
+        dialog.setMessage("Uploading to Dropbox");
         dialog.show();
 
         new UploadFileTask(DropboxClientFactory.getClient(), new UploadFileTask.Callback() {
             @Override
             public void onUploadComplete(FileMetadata result) {
                 dialog.dismiss();
-                Toast.makeText(DrawActivity.this, "File uploaded", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DrawActivity.this, "Path uploaded to Dropbox", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -127,7 +127,7 @@ public class DrawActivity extends AppCompatActivity {
                 dialog.dismiss();
                 if (D)
                     Log.e(TAG, "Failed to upload file: ", e);
-                Toast.makeText(DrawActivity.this, "Failed to upload file", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DrawActivity.this, "Failed to upload path to Dropbox", Toast.LENGTH_SHORT).show();
             }
         }).execute(Uri.fromFile(file).toString(), "");
     }
