@@ -23,10 +23,9 @@ public class DropboxClientFactory {
         }
     }
 
-    public static DbxClientV2 getClient() {
-        if (sDbxClient == null) {
+    public static DbxClientV2 getClient() throws IllegalStateException {
+        if (sDbxClient == null)
             throw new IllegalStateException("Client not initialized.");
-        }
         return sDbxClient;
     }
 }

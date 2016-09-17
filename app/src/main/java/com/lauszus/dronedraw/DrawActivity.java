@@ -35,6 +35,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.dropbox.core.android.Auth;
+import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
 
 import java.io.File;
@@ -109,27 +110,33 @@ public class DrawActivity extends AppCompatActivity {
     }
 
     private void uploadFileToDropbox(File file) {
-        final ProgressDialog dialog = new ProgressDialog(this);
-        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        dialog.setCancelable(false);
-        dialog.setMessage("Uploading to Dropbox");
-        dialog.show();
+        try {
+            DbxClientV2 client = DropboxClientFactory.getClient();
 
-        new UploadFileTask(DropboxClientFactory.getClient(), new UploadFileTask.Callback() {
-            @Override
-            public void onUploadComplete(FileMetadata result) {
-                dialog.dismiss();
-                Toast.makeText(DrawActivity.this, "Path uploaded to Dropbox", Toast.LENGTH_SHORT).show();
-            }
+            final ProgressDialog dialog = new ProgressDialog(this);
+            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            dialog.setCancelable(false);
+            dialog.setMessage("Uploading to Dropbox");
+            dialog.show();
 
-            @Override
-            public void onError(Exception e) {
-                dialog.dismiss();
-                if (D)
-                    Log.e(TAG, "Failed to upload file: ", e);
-                Toast.makeText(DrawActivity.this, "Failed to upload path to Dropbox", Toast.LENGTH_SHORT).show();
-            }
-        }).execute(Uri.fromFile(file).toString(), "");
+            new UploadFileTask(client, new UploadFileTask.Callback() {
+                @Override
+                public void onUploadComplete(FileMetadata result) {
+                    dialog.dismiss();
+                    Toast.makeText(DrawActivity.this, "Path uploaded to Dropbox", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    dialog.dismiss();
+                    if (D)
+                        Log.e(TAG, "Failed to upload file: ", e);
+                    Toast.makeText(DrawActivity.this, "Failed to upload path to Dropbox", Toast.LENGTH_SHORT).show();
+                }
+            }).execute(Uri.fromFile(file).toString(), "");
+        } catch (IllegalStateException e) {
+            Toast.makeText(DrawActivity.this, "Please setup your Dropbox account", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
