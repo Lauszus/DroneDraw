@@ -11,10 +11,15 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    signingConfigs {
+        release
+    }
     buildTypes {
         release {
-            minifyEnabled false
+            shrinkResources true
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     lintOptions {
@@ -28,4 +33,14 @@ dependencies {
     compile 'net.sf.opencsv:opencsv:2.3'
     compile 'com.dropbox.core:dropbox-core-sdk:2.1.1'
     compile 'com.squareup.okhttp:okhttp:2.7.5'
+}
+
+// These values are all set in my global gradle.properties file
+if (project.hasProperty('storeFile') && project.hasProperty('storePassword') && project.hasProperty('keyAlias') && project.hasProperty('keyPassword')) {
+    android.signingConfigs.release.storeFile = file(storeFile)
+    android.signingConfigs.release.storePassword = storePassword
+    android.signingConfigs.release.keyAlias = keyAlias
+    android.signingConfigs.release.keyPassword = keyPassword
+} else {
+    android.buildTypes.release.signingConfig = null
 }
