@@ -3,5 +3,6 @@
 
     <string name="clear_button">Clear</string>
     <string name="upload_button">Upload</string>
-    <!--<string name="dummy_content">DUMMY\nCONTENT</string>-->
+
+    <string name="app_key">p1qihzozukxenvd</string>
 </resources>

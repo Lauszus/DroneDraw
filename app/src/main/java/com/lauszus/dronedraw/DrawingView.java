@@ -30,8 +30,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.util.ArrayList;
-
 // Inspired by: http://stackoverflow.com/a/16650524
 public class DrawingView extends View {
     private Bitmap mBitmap;
@@ -74,7 +72,7 @@ public class DrawingView extends View {
         forceClear = false;
     }
 
-    public void clearView() {
+    private void clearView() {
         forceClear = true;
         invalidate();  // This will force a call to onDraw
     }
