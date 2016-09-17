@@ -43,11 +43,13 @@ public class DrawingView extends View {
     final private Paint mPaint;
     private boolean forceClear;
 
-    final public ArrayList<Float> xCoordinates = new ArrayList<>();
-    final public ArrayList<Float> yCoordinates = new ArrayList<>();
+    final public Path mFullPath;
+    public int touchCounter;
 
     public DrawingView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        mFullPath = new Path();
 
         mPath = new Path();
         mBitmapPaint = new Paint(Paint.DITHER_FLAG);
@@ -100,14 +102,19 @@ public class DrawingView extends View {
         }
     }
 
+    private float mX0, mY0;
     private float mX, mY;
     private static final float TOUCH_TOLERANCE = 4;
 
     private void touch_start(float x, float y) {
+        clearView(); // Clear previous drawing
         mPath.reset();
         mPath.moveTo(x, y);
-        mX = x;
-        mY = y;
+        mFullPath.reset();
+        touchCounter = 0;
+        mFullPath.moveTo(x, y);
+        mX0 = mX = x;
+        mY0 = mY = y;
     }
 
     private void touch_move(float x, float y) {
@@ -115,11 +122,11 @@ public class DrawingView extends View {
         float dy = Math.abs(y - mY);
         if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
             mPath.quadTo(mX, mY, (x + mX)/2, (y + mY)/2);
+            mFullPath.quadTo(mX, mY, (x + mX)/2, (y + mY)/2);
             mX = x;
             mY = y;
 
-            xCoordinates.add(x); // Store coordinates in the arrays
-            yCoordinates.add(y);
+            touchCounter++; // Increase counter used for sampling of the path
 
             circlePath.reset();
             circlePath.addCircle(mX, mY, 30, Path.Direction.CW);
@@ -128,11 +135,12 @@ public class DrawingView extends View {
 
     private void touch_up() {
         mPath.lineTo(mX, mY);
+        mFullPath.lineTo(mX, mY);
+        mPath.quadTo(mX, mY, mX0, mY0); // Close the path
+        mFullPath.quadTo(mX, mY, mX0, mY0); // Close the path
         circlePath.reset();
-        // Commit the path to our offscreen
-        mCanvas.drawPath(mPath, mPaint);
-        // Kill this so we don't double draw
-        mPath.reset();
+        mCanvas.drawPath(mPath, mPaint); // Commit the path to our offscreen
+        mPath.reset(); // Kill this so we don't double draw
     }
 
     @SuppressLint("ClickableViewAccessibility")

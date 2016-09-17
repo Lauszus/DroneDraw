@@ -22,6 +22,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.PathMeasure;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -79,7 +80,7 @@ public class DrawActivity extends AppCompatActivity {
                 if (ContextCompat.checkSelfPermission(getApplicationContext(),  Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
                     return;
 
-                if (!mDrawView.xCoordinates.isEmpty() || !mDrawView.yCoordinates.isEmpty()) {
+                if (!mDrawView.mFullPath.isEmpty()) {
                     File csvFileLocation = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "path.csv");
                     CSVWriter writer;
                     try {
@@ -89,14 +90,18 @@ public class DrawActivity extends AppCompatActivity {
                         return;
                     }
 
-                    for (int i = 0; i < mDrawView.xCoordinates.size(); i++) {
-                        float x = mDrawView.xCoordinates.get(i);
-                        float y = mDrawView.yCoordinates.get(i);
+                    int dataSize = 10 * mDrawView.touchCounter; // Sample path 10 times more than actual touches
+                    for (int i = 0; i <= dataSize; i++) {
+                        PathMeasure mPathMeasure = new PathMeasure(mDrawView.mFullPath, false);
 
-                        writer.writeNext(new String[] {Float.toString(x), Float.toString(y)});
+                        float t = (float)i/(float)dataSize;
+                        float[] xy = new float[2];
+                        mPathMeasure.getPosTan(mPathMeasure.getLength() * t, xy, null);
+
+                        writer.writeNext(new String[] { Float.toString(t), Float.toString(xy[0]), Float.toString(xy[1]), "1" });
 
                         if (D)
-                            Log.d(TAG, "x: " + x + " y: " + y);
+                            Log.d(TAG, "t: " + t + " x: " + xy[0] + " y: " + xy[1]);
                     }
                     try {
                         writer.close();
@@ -106,19 +111,16 @@ public class DrawActivity extends AppCompatActivity {
                     }
 
                     Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                    emailIntent.setType("vnd.android.cursor.dir/email"); // "text/plain"
-                    emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {"lauszus@gmail.com"});
-                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Email subject");
-                    emailIntent.putExtra(Intent.EXTRA_TEXT, "Email message text");
+                    emailIntent.setType("vnd.android.cursor.dir/email");
+                    emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { "lauszus@gmail.com" });
+                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Drone path");
+                    emailIntent.putExtra(Intent.EXTRA_TEXT, "Please see attachment");
                     emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(csvFileLocation));
 
                     if (emailIntent.resolveActivity(getPackageManager()) != null) { // Make sure that an app exist that can handle the intent
                         startActivity(emailIntent);
                     } else
                         Toast.makeText(getApplicationContext(), "No email app found", Toast.LENGTH_SHORT).show();
-
-                    mDrawView.xCoordinates.clear();
-                    mDrawView.yCoordinates.clear();
                 }
             }
         });
