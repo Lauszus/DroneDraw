@@ -1,8 +1,5 @@
 <resources>
     <string name="app_name">DroneDraw</string>
-
-    <string name="clear_button">Clear</string>
     <string name="upload_button">Upload</string>
-
-    <string name="app_key">p1qihzozukxenvd</string>
+    <string name="app_key">3o9a82fhilne3sb</string>
 </resources>
