@@ -44,3 +44,5 @@ if (project.hasProperty('storeFile') && project.hasProperty('storePassword') && 
 } else {
     android.buildTypes.release.signingConfig = null
 }
+
+apply plugin: 'com.getkeepsafe.dexcount'
