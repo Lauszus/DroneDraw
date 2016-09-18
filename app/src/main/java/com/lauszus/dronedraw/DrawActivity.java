@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.PathMeasure;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -91,7 +92,7 @@ public class DrawActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        SharedPreferences prefs = getSharedPreferences("dronedraw", MODE_PRIVATE);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String accessToken = prefs.getString("access-token", null);
         if (accessToken == null) {
             accessToken = Auth.getOAuth2Token();
@@ -104,9 +105,7 @@ public class DrawActivity extends AppCompatActivity {
     }
 
     protected boolean hasDropboxToken() {
-        SharedPreferences prefs = getSharedPreferences("dronedraw", MODE_PRIVATE);
-        String accessToken = prefs.getString("access-token", null);
-        return accessToken != null;
+        return PreferenceManager.getDefaultSharedPreferences(this).getString("access-token", null) != null;
     }
 
     private void uploadFileToDropbox(File file) {

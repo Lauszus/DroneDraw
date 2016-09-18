@@ -15,7 +15,7 @@ public class DropboxClientFactory {
 
     public static void init(String accessToken) {
         if (sDbxClient == null) {
-            DbxRequestConfig requestConfig = DbxRequestConfig.newBuilder("dronedraw")
+            DbxRequestConfig requestConfig = DbxRequestConfig.newBuilder(BuildConfig.APPLICATION_ID + BuildConfig.VERSION_NAME)
                     .withUserLocale(Locale.getDefault().toString())
                     .withHttpRequestor(OkHttp3Requestor.INSTANCE)
                     .build();
