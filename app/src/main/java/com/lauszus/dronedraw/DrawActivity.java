@@ -109,33 +109,35 @@ public class DrawActivity extends AppCompatActivity {
     }
 
     private void uploadFileToDropbox(File file) {
+        DbxClientV2 client;
         try {
-            DbxClientV2 client = DropboxClientFactory.getClient();
-
-            final ProgressDialog dialog = new ProgressDialog(this);
-            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            dialog.setCancelable(false);
-            dialog.setMessage("Uploading to Dropbox");
-            dialog.show();
-
-            new UploadFileTask(client, new UploadFileTask.Callback() {
-                @Override
-                public void onUploadComplete(FileMetadata result) {
-                    dialog.dismiss();
-                    Toast.makeText(DrawActivity.this, "Path uploaded to Dropbox", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    dialog.dismiss();
-                    if (D)
-                        Log.e(TAG, "Failed to upload file: ", e);
-                    Toast.makeText(DrawActivity.this, "Failed to upload path to Dropbox", Toast.LENGTH_SHORT).show();
-                }
-            }).execute(Uri.fromFile(file).toString(), "");
+            client = DropboxClientFactory.getClient();
         } catch (IllegalStateException e) {
             Toast.makeText(DrawActivity.this, "Please setup your Dropbox account", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        final ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.setCancelable(false);
+        dialog.setMessage("Uploading to Dropbox");
+        dialog.show();
+
+        new UploadFileTask(client, new UploadFileTask.Callback() {
+            @Override
+            public void onUploadComplete(FileMetadata result) {
+                dialog.dismiss();
+                Toast.makeText(DrawActivity.this, "Path uploaded to Dropbox", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(Exception e) {
+                dialog.dismiss();
+                if (D)
+                    Log.e(TAG, "Failed to upload file: ", e);
+                Toast.makeText(DrawActivity.this, "Failed to upload path to Dropbox", Toast.LENGTH_SHORT).show();
+            }
+        }).execute(Uri.fromFile(file).toString(), "");
     }
 
     @Override
@@ -156,7 +158,7 @@ public class DrawActivity extends AppCompatActivity {
             File csvFileLocation = new File(getFilesDir(), "path.csv");
             try {
                 CSVWriter writer = new CSVWriter(new FileWriter(csvFileLocation), ',', CSVWriter.NO_QUOTE_CHARACTER);
-                int dataSize = 10 * mDrawView.touchCounter; // Sample path 10 times more than actual touches
+                final int dataSize = 10 * mDrawView.touchCounter; // Sample path 10 times more than actual touches
                 for (int i = 0; i <= dataSize; i++) {
                     PathMeasure mPathMeasure = new PathMeasure(mDrawView.mFullPath, false);
 
