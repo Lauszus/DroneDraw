@@ -166,6 +166,9 @@ public class DrawActivity extends AppCompatActivity {
                     float[] xy = new float[2];
                     mPathMeasure.getPosTan(mPathMeasure.getLength() * t, xy, null);
 
+                    xy[0] /= mDrawView.getWidth(); // Normalize coordinates
+                    xy[1] /= mDrawView.getHeight();
+
                     writer.writeNext(new String[]{Integer.toString(i), Float.toString(xy[0]), Float.toString(xy[1]), "1"});
 
                     //if (D) Log.d(TAG, "t: " + t + " x: " + xy[0] + " y: " + xy[1]);
