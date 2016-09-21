@@ -162,12 +162,14 @@ public class DroneDrawActivity extends AppCompatActivity {
                 for (int i = 0; i <= dataSize; i++) {
                     PathMeasure mPathMeasure = new PathMeasure(mDrawView.mFullPath, false);
 
-                    float t = (float) i / (float) dataSize;
+                    final float t = (float) i / (float) dataSize;
                     float[] xy = new float[2];
                     mPathMeasure.getPosTan(mPathMeasure.getLength() * t, xy, null);
 
-                    xy[0] /= mDrawView.getWidth(); // Normalize coordinates
-                    xy[1] /= mDrawView.getHeight();
+                    final int maxDimension = Math.max(mDrawView.getWidth(), mDrawView.getHeight());
+
+                    xy[0] /= (float) maxDimension; // Normalize coordinates
+                    xy[1] /= (float) maxDimension;
 
                     writer.writeNext(new String[]{Integer.toString(i), Float.toString(xy[0]), Float.toString(xy[1]), "1"});
 

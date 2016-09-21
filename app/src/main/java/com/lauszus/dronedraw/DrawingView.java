@@ -134,8 +134,6 @@ public class DrawingView extends View {
     private void touch_up() {
         mPath.lineTo(mX, mY);
         mFullPath.lineTo(mX, mY);
-        mPath.quadTo(mX, mY, mX0, mY0); // Close the path
-        mFullPath.quadTo(mX, mY, mX0, mY0); // Close the path
         circlePath.reset();
         mCanvas.drawPath(mPath, mPaint); // Commit the path to our offscreen
         mPath.reset(); // Kill this so we don't double draw
