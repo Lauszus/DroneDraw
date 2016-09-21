@@ -45,8 +45,8 @@ import java.io.IOException;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
-public class DrawActivity extends AppCompatActivity {
-    public static final String TAG = DrawActivity.class.getSimpleName();
+public class DroneDrawActivity extends AppCompatActivity {
+    public static final String TAG = DroneDrawActivity.class.getSimpleName();
     public static final boolean D = BuildConfig.DEBUG; // This is automatically set when building
 
     private DrawingView mDrawView;
@@ -59,7 +59,7 @@ public class DrawActivity extends AppCompatActivity {
         setContentView(R.layout.activity_draw);
 
         if (!hasDropboxToken())
-            Auth.startOAuth2Authentication(DrawActivity.this, getString(R.string.app_key));
+            Auth.startOAuth2Authentication(DroneDrawActivity.this, getString(R.string.app_key));
 
         mDrawView = (DrawingView) findViewById(R.id.draw_view);
         findViewById(R.id.upload_button).setOnClickListener(new View.OnClickListener() {
@@ -67,13 +67,13 @@ public class DrawActivity extends AppCompatActivity {
             public void onClick(View view) {
                 // Request permission if needed
                 if (ContextCompat.checkSelfPermission(getApplicationContext(),  Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED)
-                    ActivityCompat.requestPermissions(DrawActivity.this, new String[]{ Manifest.permission.INTERNET }, PERMISSIONS_REQUEST_CODE);
+                    ActivityCompat.requestPermissions(DroneDrawActivity.this, new String[]{ Manifest.permission.INTERNET }, PERMISSIONS_REQUEST_CODE);
                 else
                     uploadCsvFile();
             }
         });
     }
-
+    
     private void sendEmail(File file) {
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
         emailIntent.setType("vnd.android.cursor.dir/email");
@@ -113,7 +113,7 @@ public class DrawActivity extends AppCompatActivity {
         try {
             client = DropboxClientFactory.getClient();
         } catch (IllegalStateException e) {
-            Toast.makeText(DrawActivity.this, "Please setup your Dropbox account", Toast.LENGTH_SHORT).show();
+            Toast.makeText(DroneDrawActivity.this, "Please setup your Dropbox account", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -127,7 +127,7 @@ public class DrawActivity extends AppCompatActivity {
             @Override
             public void onUploadComplete(FileMetadata result) {
                 dialog.dismiss();
-                Toast.makeText(DrawActivity.this, "Path uploaded to Dropbox", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DroneDrawActivity.this, "Path uploaded to Dropbox", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -135,7 +135,7 @@ public class DrawActivity extends AppCompatActivity {
                 dialog.dismiss();
                 if (D)
                     Log.e(TAG, "Failed to upload file: ", e);
-                Toast.makeText(DrawActivity.this, "Failed to upload path to Dropbox", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DroneDrawActivity.this, "Failed to upload path to Dropbox", Toast.LENGTH_SHORT).show();
             }
         }).execute(Uri.fromFile(file).toString(), "");
     }

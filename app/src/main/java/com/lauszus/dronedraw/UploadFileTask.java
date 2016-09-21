@@ -72,8 +72,8 @@ class UploadFileTask extends AsyncTask<String, Void, FileMetadata> {
 
         String path = remoteFolderPath + "/" + remoteFileName;
 
-        if (DrawActivity.D)
-            Log.d(DrawActivity.TAG, "Uploading: \"" + localUri + "\" to: \"" + path + "\"");
+        if (DroneDrawActivity.D)
+            Log.d(DroneDrawActivity.TAG, "Uploading: \"" + localUri + "\" to: \"" + path + "\"");
 
         try {
             InputStream inputStream = new FileInputStream(localFile);
