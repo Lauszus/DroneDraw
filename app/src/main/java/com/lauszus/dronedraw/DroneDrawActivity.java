@@ -171,7 +171,7 @@ public class DroneDrawActivity extends AppCompatActivity {
                     xy[0] /= (float) maxDimension; // Normalize coordinates
                     xy[1] /= (float) maxDimension;
 
-                    writer.writeNext(new String[]{Integer.toString(i), Float.toString(xy[0]), Float.toString(xy[1]), "1"});
+                    writer.writeNext(new String[]{Integer.toString(i), Float.toString(xy[0]), Float.toString(xy[1])});
 
                     //if (D) Log.d(TAG, "t: " + t + " x: " + xy[0] + " y: " + xy[1]);
                 }
