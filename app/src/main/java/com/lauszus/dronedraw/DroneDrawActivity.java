@@ -166,14 +166,14 @@ public class DroneDrawActivity extends AppCompatActivity {
                     float[] xy = new float[2];
                     mPathMeasure.getPosTan(mPathMeasure.getLength() * t, xy, null);
 
-                    final int maxDimension = Math.max(mDrawView.getWidth(), mDrawView.getHeight());
+                    // Normalize coordinates based on maximum dimension
+                    final float maxDimension = Math.max(mDrawView.getWidth(), mDrawView.getHeight());
+                    final float x = xy[0] / maxDimension;
+                    final float y = (mDrawView.getHeight() - xy[1]) / maxDimension; // Make y-axis point upward
 
-                    xy[0] /= (float) maxDimension; // Normalize coordinates
-                    xy[1] /= (float) maxDimension;
+                    writer.writeNext(new String[]{Integer.toString(i), Float.toString(x), Float.toString(y)});
 
-                    writer.writeNext(new String[]{Integer.toString(i), Float.toString(xy[0]), Float.toString(xy[1])});
-
-                    //if (D) Log.d(TAG, "t: " + t + " x: " + xy[0] + " y: " + xy[1]);
+                    //if (D) Log.d(TAG, "t: " + t + " x: " + x + " y: " + y);
                 }
                 writer.close();
                 //sendEmail(csvFileLocation);
