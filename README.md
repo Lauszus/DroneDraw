@@ -7,4 +7,6 @@ _________
 
 In order to built this project you need to download [Android Studio](http://developer.android.com/sdk/index.html).
 
+This app is to be meant to be used with the drone draw demo located at the following repository: <https://github.com/HovakimyanResearch/crazyflie-demos>.
+
 For more information send me an email at <lauszus@gmail.com>.
